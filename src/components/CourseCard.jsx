@@ -18,6 +18,7 @@ export default function CourseCard({ code, recommended = false }) {
       <input
         type="checkbox"
         checked={completed}
+        disabled={!unlocked && !completed}
         onChange={() => toggleCourse(code)}
         aria-label={`Mark ${course.code} as completed`}
       />

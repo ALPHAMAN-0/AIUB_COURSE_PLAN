@@ -97,6 +97,60 @@ export const careers = [
     majorTrack: 'informationSystems',
     recommended: ['MIS3101', 'MIS4011', 'MIS4014'],
     cosElectives: ['MIS4007', 'MIS4012']
+  },
+  {
+    id: 'devops-engineer',
+    title: 'DevOps / SRE Engineer',
+    icon: '⚙️',
+    blurb: 'Automate deployments, build CI/CD pipelines, and run reliable production systems.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4270', 'CSC4271', 'CSC4273'],
+    cosElectives: ['COE4125', 'COE4126']
+  },
+  {
+    id: 'cloud-engineer',
+    title: 'Cloud Engineer',
+    icon: '☁️',
+    blurb: 'Design and operate scalable cloud infrastructure on AWS, Azure, and GCP.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4273', 'CSC4270', 'CSC4162'],
+    cosElectives: ['COE4126', 'COE4232']
+  },
+  {
+    id: 'blockchain-developer',
+    title: 'Blockchain Developer',
+    icon: '⛓️',
+    blurb: 'Build smart contracts, dApps, and decentralized systems on Ethereum and beyond.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4273', 'CSC4163', 'CSC4162'],
+    cosElectives: ['CSC4183', 'COE4232']
+  },
+  {
+    id: 'xr-developer',
+    title: 'AR / VR / XR Developer',
+    icon: '🥽',
+    blurb: 'Build immersive AR, VR, and mixed reality experiences for headsets and mobile.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4274', 'CSC4272', 'CSC4163'],
+    cosElectives: ['COE4231', 'COE4234']
+  },
+  {
+    id: 'qa-sdet',
+    title: 'QA / SDET Engineer',
+    icon: '✅',
+    blurb: 'Write automated tests, CI pipelines, and ship high-quality software at scale.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4271', 'CSC4270', 'CSC4162'],
+    cosElectives: ['CSC4163', 'CSC4181']
+  },
+  {
+    id: 'iot-engineer',
+    title: 'Embedded / IoT Engineer',
+    icon: '🔌',
+    blurb: 'Build firmware and IoT systems connecting sensors, devices, and the cloud.',
+    majorTrack: 'computerEngineering',
+    recommended: ['COE4128', 'EEE4233', 'COE4233'],
+    cosElectives: ['COE4235', 'EEE4217']
   }
 ]
 
