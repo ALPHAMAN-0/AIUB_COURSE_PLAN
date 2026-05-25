@@ -1,12 +1,19 @@
-# AIUB CSE Course Planner
+# AIUB Course Planner
 
-A web app that helps **AIUB BSc in Computer Science & Engineering** students plan their 148-credit degree based on their target career.
+A web app that helps AIUB students plan their 148-credit BSc degree based on their target career. Supports three programs:
+
+- **BSc in Computer Science & Engineering** (CSE)
+- **BSc in Data Science** (DS)
+- **BSc in Computer Network & Cyber Security** (CNCS)
+
+Pick your program on first load, then plan from there. Progress is kept separately per program so you can compare paths without losing your work.
 
 Live site (after first deploy): `https://<your-github-username>.github.io/AIUB_COURSE_PLAN/`
 
 ## Features
 
-- **Career-path recommendations** — pick from 11 paths (Software Engineer, AI/ML Engineer, Data Scientist, Cybersecurity, Computer Engineer, Mobile Dev, Game Dev, Network Engineer, Researcher, IT Manager, Web Dev) and the app highlights the right major track + electives.
+- **Multi-program support** — first-run picker chooses CSE, DS, or CNCS. Switch any time from the header dropdown; each program keeps its own progress.
+- **Career-path recommendations** — each program has its own curated career list (CSE: 17, DS: 6, CNCS: 6). Picking a career auto-selects the right major track and highlights recommended electives.
 - **Completed-course tracker** — check off courses you've finished; credit and percentage progress update live and persist in your browser's localStorage.
 - **Prerequisite locking** — courses with unmet prerequisites are visually locked with a tooltip listing what's missing. Credit-gated courses (Research Methodology at 100 credits, Internship at 139) unlock automatically when the bar is reached.
 - **Semester planner** — drag and drop courses across 8 semester slots (Y1S1 → Y4S2) to build your graduation roadmap. Each column shows total credits.

@@ -1,9 +1,8 @@
 import { usePlanner } from '../context/PlannerContext'
-import { TOTAL_CREDITS_REQUIRED, coreCourses } from '../data/courses'
 
 export default function ProgressDashboard() {
-  const { totalCreditsCompleted, completedSet } = usePlanner()
-  const pct = Math.min(100, Math.round((totalCreditsCompleted / TOTAL_CREDITS_REQUIRED) * 100))
+  const { totalCreditsCompleted, completedSet, totalCredits, coreCourses } = usePlanner()
+  const pct = Math.min(100, Math.round((totalCreditsCompleted / totalCredits) * 100))
   const coreDone = coreCourses.filter(c => completedSet.has(c.code)).length
 
   return (
@@ -14,7 +13,7 @@ export default function ProgressDashboard() {
           <span className="stat-label">Credits Earned</span>
         </div>
         <div className="stat">
-          <span className="stat-num">{TOTAL_CREDITS_REQUIRED - totalCreditsCompleted}</span>
+          <span className="stat-num">{Math.max(0, totalCredits - totalCreditsCompleted)}</span>
           <span className="stat-label">Credits Remaining</span>
         </div>
         <div className="stat">

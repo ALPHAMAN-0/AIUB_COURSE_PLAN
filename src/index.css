@@ -435,10 +435,110 @@ button {
   gap: 0.5rem;
 }
 
+/* ===== Program Picker (first-run) ===== */
+.app-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1.25rem;
+}
+.program-picker {
+  width: 100%;
+  max-width: 1100px;
+}
+.program-picker-inner {
+  text-align: center;
+}
+.program-picker h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.program-picker-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 2rem;
+}
+.program-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  text-align: left;
+}
+.program-picker-card {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  display: flex; flex-direction: column; gap: 0.5rem;
+  transition: all 0.15s ease;
+}
+.program-picker-card:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+.program-picker-logo {
+  align-self: flex-start;
+  padding: 0.4rem 0.75rem;
+  background: linear-gradient(135deg, #1f6feb, #58a6ff);
+  color: var(--text-bright);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+.program-picker-card h3 {
+  font-size: 1.1rem;
+  margin-top: 0.25rem;
+}
+.program-picker-meta {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* ===== Program Switcher (in Header) ===== */
+.program-switcher {
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  max-width: 240px;
+}
+.program-switcher:hover { border-color: var(--accent); color: var(--accent); }
+.program-switcher:focus { outline: none; border-color: var(--accent); }
+
+/* ===== Elective Slot Card (planner placeholders) ===== */
+.course-slot {
+  border-style: dashed !important;
+  background: var(--warn-soft) !important;
+  cursor: default;
+}
+.course-slot:hover { border-color: var(--warn) !important; }
+.course-slot .plan-code { color: var(--warn); }
+.course-slot .plan-title { color: var(--text-bright); font-size: 0.7rem; opacity: 0.9; }
+.slot-counter {
+  margin-top: 0.2rem;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  background: var(--surface);
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  align-self: flex-start;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .app { padding: 0.75rem; }
   .planner-grid { grid-template-columns: repeat(8, minmax(160px, 1fr)); }
   .tab { padding: 0.5rem 0.75rem; }
   h1 { font-size: 1.15rem; }
+  .program-switcher { max-width: 160px; }
 }

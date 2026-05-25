@@ -6,9 +6,20 @@ import CareerPathSelector from './components/CareerPathSelector'
 import MajorTrackSelector from './components/MajorTrackSelector'
 import CourseList from './components/CourseList'
 import SemesterPlanner from './components/SemesterPlanner'
+import ProgramSelector from './components/ProgramSelector'
+import { usePlanner } from './context/PlannerContext'
 
 export default function App() {
   const [tab, setTab] = useState('career')
+  const { program } = usePlanner()
+
+  if (!program) {
+    return (
+      <div className="app app-picker">
+        <ProgramSelector mode="picker" />
+      </div>
+    )
+  }
 
   return (
     <div className="app">
@@ -26,7 +37,7 @@ export default function App() {
         {tab === 'planner' && <SemesterPlanner />}
       </main>
       <footer className="footer">
-        <span>AIUB BSc in CSE · 148 credits</span>
+        <span>{program.name} · {program.totalCredits} credits</span>
         <span>Progress saved locally in your browser</span>
       </footer>
     </div>

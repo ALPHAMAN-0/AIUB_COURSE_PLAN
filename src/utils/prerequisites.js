@@ -1,14 +1,18 @@
 export function parsePrereq(raw) {
-  if (!raw || raw === 'Nil' || raw === 'Not mentioned') {
+  if (raw == null || raw === 'Nil' || raw === 'Not mentioned') {
     return { codes: [], creditRequirement: null }
   }
 
-  const creditMatch = raw.match(/^(\d+)\s*Credits?\s*Completed$/i)
+  if (Array.isArray(raw)) {
+    return { codes: raw.filter(Boolean).map(s => String(s).trim()), creditRequirement: null }
+  }
+
+  const creditMatch = String(raw).match(/^(\d+)\s*Credits?(\s+Completed)?$/i)
   if (creditMatch) {
     return { codes: [], creditRequirement: parseInt(creditMatch[1], 10) }
   }
 
-  const codes = raw
+  const codes = String(raw)
     .split(/&|,/)
     .map(s => s.trim())
     .filter(Boolean)

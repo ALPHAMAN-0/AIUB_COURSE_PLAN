@@ -1,6 +1,3 @@
-import { parsePrereq } from '../utils/prerequisites'
-import { parseCredit } from '../utils/credits'
-
 const rawCore = [
   { code: 'MAT1102', title: 'Differential Calculus & Co-ordinate Geometry', prereq: 'Nil', credit: '3' },
   { code: 'PHY1101', title: 'Physics 1', prereq: 'Nil', credit: '3' },
@@ -111,59 +108,186 @@ const rawElectives = {
   ]
 }
 
-export const MAJOR_LABELS = {
+const majorLabels = {
   informationSystems: 'Information Systems',
   softwareEngineering: 'Software Engineering',
   computationalTheory: 'Computational Theory',
   computerEngineering: 'Computer Engineering'
 }
 
-function deriveDefaultSemester(code) {
-  const match = code.match(/(\d)(\d)\d{2}$/)
-  if (!match) return 7
-  const year = parseInt(match[1], 10)
-  const sem = parseInt(match[2], 10)
-  const slot = (year - 1) * 2 + (sem >= 2 ? 2 : 1)
-  return Math.min(Math.max(slot, 1), 8)
+const majorDescriptions = {
+  informationSystems: 'Databases, ERP, business intelligence, e-commerce.',
+  softwareEngineering: 'Software design, testing, web, mobile, app development.',
+  computationalTheory: 'Algorithms, ML, NLP, parallel computing, graph theory.',
+  computerEngineering: 'Hardware, networks, embedded, VLSI, robotics, security.'
 }
 
-function buildCourse(raw, category, major = null) {
-  const { codes, creditRequirement } = parsePrereq(raw.prereq)
-  const { credits, hasLab } = parseCredit(raw.credit)
-  return {
-    code: raw.code,
-    title: raw.title,
-    prerequisites: codes,
-    creditRequirement,
-    credits,
-    hasLab,
-    category,
-    major,
-    defaultSemester: deriveDefaultSemester(raw.code)
+const careers = [
+  {
+    id: 'software-engineer',
+    title: 'Software Engineer',
+    icon: '💻',
+    blurb: 'Build full-stack applications, APIs, and scalable systems.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4270', 'CSC4160', 'CSC4271', 'CSC4273'],
+    cosElectives: ['CSC4163', 'CSC4162']
+  },
+  {
+    id: 'web-developer',
+    title: 'Web Developer',
+    icon: '🌐',
+    blurb: 'Design and ship modern web apps and services.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4161', 'CSC4163', 'CSC4164'],
+    cosElectives: ['CSC4272', 'CSC4162']
+  },
+  {
+    id: 'mobile-developer',
+    title: 'Mobile App Developer',
+    icon: '📱',
+    blurb: 'Build iOS and Android apps with native and cross-platform tools.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4272', 'CSC4163', 'CSC4274'],
+    cosElectives: ['CSC4162', 'CSC4161']
+  },
+  {
+    id: 'ai-ml-engineer',
+    title: 'AI / ML Engineer',
+    icon: '🤖',
+    blurb: 'Train ML models, build AI pipelines and intelligent systems.',
+    majorTrack: 'computationalTheory',
+    recommended: ['CSC4232', 'CSC4233', 'CSC4127'],
+    cosElectives: ['CSC4180', 'CSC4162']
+  },
+  {
+    id: 'data-scientist',
+    title: 'Data Scientist',
+    icon: '📊',
+    blurb: 'Analyze data, run experiments, and surface insights.',
+    majorTrack: 'informationSystems',
+    recommended: ['CSC4180', 'CSC4285', 'MIS4014'],
+    cosElectives: ['CSC4232', 'CSC4162']
+  },
+  {
+    id: 'cybersecurity',
+    title: 'Cybersecurity Engineer',
+    icon: '🛡️',
+    blurb: 'Defend networks, systems, and data from threats.',
+    majorTrack: 'computerEngineering',
+    recommended: ['COE4232', 'COE4126', 'COE4233'],
+    cosElectives: ['CSC4183', 'CSC4181']
+  },
+  {
+    id: 'computer-engineer',
+    title: 'Computer / Hardware Engineer',
+    icon: '🔧',
+    blurb: 'Design hardware, embedded systems, and chip architectures.',
+    majorTrack: 'computerEngineering',
+    recommended: ['EEE4217', 'COE4128', 'EEE4233'],
+    cosElectives: ['COE4125', 'COE4129']
+  },
+  {
+    id: 'network-engineer',
+    title: 'Network Engineer',
+    icon: '📡',
+    blurb: 'Build and operate large-scale network infrastructure.',
+    majorTrack: 'computerEngineering',
+    recommended: ['COE4126', 'COE4127', 'COE4232'],
+    cosElectives: ['COE4233', 'EEE4209']
+  },
+  {
+    id: 'game-developer',
+    title: 'Game / Graphics Developer',
+    icon: '🎮',
+    blurb: 'Make games, VR experiences, and real-time graphics.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4274', 'CSC4163', 'CSC4272'],
+    cosElectives: ['COE4231', 'COE4234']
+  },
+  {
+    id: 'researcher',
+    title: 'Researcher / Academia',
+    icon: '🔬',
+    blurb: 'Pursue graduate study and original CS research.',
+    majorTrack: 'computationalTheory',
+    recommended: ['CSC4125', 'CSC4126', 'CSC4127'],
+    cosElectives: ['CSC4232', 'CSC4231']
+  },
+  {
+    id: 'is-manager',
+    title: 'IT / IS Manager',
+    icon: '📋',
+    blurb: 'Run enterprise systems, ERP, and IT operations.',
+    majorTrack: 'informationSystems',
+    recommended: ['MIS3101', 'MIS4011', 'MIS4014'],
+    cosElectives: ['MIS4007', 'MIS4012']
+  },
+  {
+    id: 'devops-engineer',
+    title: 'DevOps / SRE Engineer',
+    icon: '⚙️',
+    blurb: 'Automate deployments, build CI/CD pipelines, and run reliable production systems.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4270', 'CSC4271', 'CSC4273'],
+    cosElectives: ['COE4125', 'COE4126']
+  },
+  {
+    id: 'cloud-engineer',
+    title: 'Cloud Engineer',
+    icon: '☁️',
+    blurb: 'Design and operate scalable cloud infrastructure on AWS, Azure, and GCP.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4273', 'CSC4270', 'CSC4162'],
+    cosElectives: ['COE4126', 'COE4232']
+  },
+  {
+    id: 'blockchain-developer',
+    title: 'Blockchain Developer',
+    icon: '⛓️',
+    blurb: 'Build smart contracts, dApps, and decentralized systems on Ethereum and beyond.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4273', 'CSC4163', 'CSC4162'],
+    cosElectives: ['CSC4183', 'COE4232']
+  },
+  {
+    id: 'xr-developer',
+    title: 'AR / VR / XR Developer',
+    icon: '🥽',
+    blurb: 'Build immersive AR, VR, and mixed reality experiences for headsets and mobile.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4274', 'CSC4272', 'CSC4163'],
+    cosElectives: ['COE4231', 'COE4234']
+  },
+  {
+    id: 'qa-sdet',
+    title: 'QA / SDET Engineer',
+    icon: '✅',
+    blurb: 'Write automated tests, CI pipelines, and ship high-quality software at scale.',
+    majorTrack: 'softwareEngineering',
+    recommended: ['CSC4271', 'CSC4270', 'CSC4162'],
+    cosElectives: ['CSC4163', 'CSC4181']
+  },
+  {
+    id: 'iot-engineer',
+    title: 'Embedded / IoT Engineer',
+    icon: '🔌',
+    blurb: 'Build firmware and IoT systems connecting sensors, devices, and the cloud.',
+    majorTrack: 'computerEngineering',
+    recommended: ['COE4128', 'EEE4233', 'COE4233'],
+    cosElectives: ['COE4235', 'EEE4217']
   }
-}
-
-export const coreCourses = rawCore.map(c => buildCourse(c, 'core'))
-
-export const majorElectives = Object.entries(rawElectives).flatMap(([major, list]) =>
-  list.map(c => buildCourse(c, 'majorElective', major))
-)
-
-export const allCourses = [...coreCourses, ...majorElectives]
-
-export const courseByCode = Object.fromEntries(allCourses.map(c => [c.code, c]))
-
-export const SEMESTER_LABELS = [
-  'Year 1 · Sem 1',
-  'Year 1 · Sem 2',
-  'Year 2 · Sem 1',
-  'Year 2 · Sem 2',
-  'Year 3 · Sem 1',
-  'Year 3 · Sem 2',
-  'Year 4 · Sem 1',
-  'Year 4 · Sem 2'
 ]
 
-export const REQUIRED_MAJOR_COURSES = 3
-export const REQUIRED_COS_ELECTIVES = 2
-export const TOTAL_CREDITS_REQUIRED = 148
+export const cse = {
+  id: 'cse',
+  name: 'BSc in Computer Science & Engineering',
+  shortName: 'CSE',
+  logo: 'CSE',
+  totalCredits: 148,
+  semesterCount: 8,
+  rawCore,
+  electives: rawElectives,
+  majorLabels,
+  majorDescriptions,
+  careers
+}

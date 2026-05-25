@@ -1,10 +1,19 @@
-import { careers } from '../data/careers'
-import { MAJOR_LABELS } from '../data/courses'
 import { usePlanner } from '../context/PlannerContext'
 
 export default function CareerPathSelector() {
-  const { state, setCareerPath } = usePlanner()
+  const { state, setCareerPath, careers, majorLabels } = usePlanner()
   const selected = state.careerPath
+
+  if (careers.length === 0) {
+    return (
+      <section className="career-section">
+        <div className="section-head">
+          <h2>Career paths</h2>
+          <p>No careers are defined for this program yet.</p>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="career-section">
@@ -25,7 +34,7 @@ export default function CareerPathSelector() {
               <h3>{career.title}</h3>
               <p className="career-blurb">{career.blurb}</p>
               <div className="career-meta">
-                <span className="major-tag">{MAJOR_LABELS[career.majorTrack]}</span>
+                <span className="major-tag">{majorLabels[career.majorTrack] || career.majorTrack}</span>
                 {active && <span className="selected-tag">Selected</span>}
               </div>
             </button>

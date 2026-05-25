@@ -1,6 +1,4 @@
 import { useMemo, useState } from 'react'
-import { coreCourses, majorElectives, MAJOR_LABELS } from '../data/courses'
-import { careerById } from '../data/careers'
 import { usePlanner } from '../context/PlannerContext'
 import CourseCard from './CourseCard'
 
@@ -13,20 +11,20 @@ const FILTERS = [
 ]
 
 export default function CourseList() {
-  const { state } = usePlanner()
+  const { state, coreCourses, majorElectives, majorLabels, careerById, program } = usePlanner()
   const [filter, setFilter] = useState('all')
   const [query, setQuery] = useState('')
 
   const career = state.careerPath ? careerById[state.careerPath] : null
   const recommendedSet = useMemo(() => {
     if (!career) return new Set()
-    return new Set([...career.recommended, ...career.cosElectives])
+    return new Set([...(career.recommended || []), ...(career.cosElectives || [])])
   }, [career])
 
   const myMajor = state.majorTrack
   const myMajorCourses = useMemo(
     () => majorElectives.filter(c => c.major === myMajor),
-    [myMajor]
+    [majorElectives, myMajor]
   )
 
   const matchesQuery = c => {
@@ -54,16 +52,18 @@ export default function CourseList() {
     )
   }
 
+  const coreSubtitle = `Required for all ${program.shortName} students`
+
   const renderContent = () => {
-    if (filter === 'core') return renderSection('Core Courses', coreCourses, 'Required for all CSE students')
+    if (filter === 'core') return renderSection('Core Courses', coreCourses, coreSubtitle)
     if (filter === 'major') {
       if (!myMajor) {
         return <div className="empty-note">Pick a major track on the Career tab first.</div>
       }
-      return renderSection(`${MAJOR_LABELS[myMajor]} Courses`, myMajorCourses, 'Your chosen track')
+      return renderSection(`${majorLabels[myMajor] || myMajor} Courses`, myMajorCourses, 'Your chosen track')
     }
     if (filter === 'electives') {
-      return Object.entries(MAJOR_LABELS).map(([key, label]) =>
+      return Object.entries(majorLabels).map(([key, label]) =>
         renderSection(label, majorElectives.filter(c => c.major === key))
       )
     }
@@ -76,8 +76,8 @@ export default function CourseList() {
     }
     return (
       <>
-        {renderSection('Core Courses', coreCourses, 'Required for all CSE students')}
-        {Object.entries(MAJOR_LABELS).map(([key, label]) =>
+        {renderSection('Core Courses', coreCourses, coreSubtitle)}
+        {Object.entries(majorLabels).map(([key, label]) =>
           renderSection(`${label} Electives`, majorElectives.filter(c => c.major === key))
         )}
       </>
