@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { usePlanner } from '../context/PlannerContext'
-import { SEMESTER_LABELS } from '../data/programs'
+import { buildSemesterLabels, TERM_ORDER, TERM_LABEL } from '../data/programs'
 
 function getSemesterAssignment(course, semesterPlan) {
   if (semesterPlan[course.code] !== undefined) return semesterPlan[course.code]
@@ -16,10 +16,17 @@ export default function SemesterPlanner() {
     getCourseStatus,
     allCourses,
     electiveSlots,
+    setStartTerm,
     program
   } = usePlanner()
   const [showMajor, setShowMajor] = useState(true)
   const [dragCode, setDragCode] = useState(null)
+
+  const startTerm = state.startTerm || 'spring'
+  const semesterLabels = useMemo(
+    () => buildSemesterLabels(startTerm, program.semesterCount || 8),
+    [startTerm, program.semesterCount]
+  )
 
   const visibleCourses = useMemo(() => {
     return allCourses.filter(c => {
@@ -86,16 +93,30 @@ export default function SemesterPlanner() {
       <div className="planner-head">
         <div>
           <h2>Semester Roadmap</h2>
-          <p>Drag courses between semesters to plan your degree. Defaults follow course codes.</p>
+          <p>Drag courses between semesters to plan your degree. AIUB runs Spring → Summer → Fall — pick the term you started in to label each column.</p>
         </div>
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={showMajor}
-            onChange={e => setShowMajor(e.target.checked)}
-          />
-          Show major electives
-        </label>
+        <div className="planner-controls">
+          <label className="term-picker">
+            Start term:
+            <select
+              value={startTerm}
+              onChange={e => setStartTerm(e.target.value)}
+              aria-label="Start term"
+            >
+              {TERM_ORDER.map(t => (
+                <option key={t} value={t}>{TERM_LABEL[t]}</option>
+              ))}
+            </select>
+          </label>
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={showMajor}
+              onChange={e => setShowMajor(e.target.checked)}
+            />
+            Show major electives
+          </label>
+        </div>
       </div>
       <div className="planner-grid">
         {semesters.map((courses, idx) => {
@@ -110,7 +131,7 @@ export default function SemesterPlanner() {
               onDrop={e => handleDrop(e, semNum)}
             >
               <div className="semester-head">
-                <span className="semester-name">{SEMESTER_LABELS[idx]}</span>
+                <span className="semester-name">{semesterLabels[idx]}</span>
                 <span className="semester-credit">{credits} cr</span>
               </div>
               <div className="semester-body">

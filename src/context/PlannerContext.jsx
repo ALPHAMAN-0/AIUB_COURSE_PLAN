@@ -10,7 +10,8 @@ const emptyPlanner = () => ({
   completedCourses: [],
   careerPath: null,
   majorTrack: null,
-  semesterPlan: {}
+  semesterPlan: {},
+  startTerm: 'spring'
 })
 
 function makeDefaultState() {
@@ -31,7 +32,8 @@ function initialState() {
         completedCourses: Array.isArray(parsed.completedCourses) ? parsed.completedCourses : [],
         careerPath: parsed.careerPath ?? null,
         majorTrack: parsed.majorTrack ?? null,
-        semesterPlan: parsed.semesterPlan && typeof parsed.semesterPlan === 'object' ? parsed.semesterPlan : {}
+        semesterPlan: parsed.semesterPlan && typeof parsed.semesterPlan === 'object' ? parsed.semesterPlan : {},
+        startTerm: parsed.startTerm || 'spring'
       }
     }
   } catch {
@@ -49,7 +51,7 @@ export function PlannerProvider({ children }) {
   const activeProgramId = state.programId
   const program = activeProgramId ? programById[activeProgramId] : null
   const active = activeProgramId && state.byProgram?.[activeProgramId]
-    ? state.byProgram[activeProgramId]
+    ? { ...emptyPlanner(), ...state.byProgram[activeProgramId] }
     : emptyPlanner()
 
   const completedSet = useMemo(() => new Set(active.completedCourses), [active.completedCourses])
@@ -107,6 +109,10 @@ export function PlannerProvider({ children }) {
     mutateActive(curr => ({ ...curr, majorTrack: track }))
   }, [mutateActive])
 
+  const setStartTerm = useCallback((term) => {
+    mutateActive(curr => ({ ...curr, startTerm: term }))
+  }, [mutateActive])
+
   const assignSemester = useCallback((code, semester) => {
     mutateActive(curr => ({
       ...curr,
@@ -156,6 +162,7 @@ export function PlannerProvider({ children }) {
     toggleCourse,
     setCareerPath,
     setMajorTrack,
+    setStartTerm,
     assignSemester,
     removeFromSemester,
     reset,

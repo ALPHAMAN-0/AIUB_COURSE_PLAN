@@ -4,16 +4,19 @@ import { cse } from './cse'
 import { dataScience } from './dataScience'
 import { cncs } from './cncs'
 
-export const SEMESTER_LABELS = [
-  'Year 1 · Sem 1',
-  'Year 1 · Sem 2',
-  'Year 2 · Sem 1',
-  'Year 2 · Sem 2',
-  'Year 3 · Sem 1',
-  'Year 3 · Sem 2',
-  'Year 4 · Sem 1',
-  'Year 4 · Sem 2'
-]
+// AIUB academic calendar: 3 semesters per year, Spring → Summer → Fall.
+// Each program is 8 program-semesters; the calendar term rotates from the student's start term.
+export const TERM_ORDER = ['spring', 'summer', 'fall']
+export const TERM_LABEL = { spring: 'Spring', summer: 'Summer', fall: 'Fall' }
+export const DEFAULT_START_TERM = 'spring'
+
+export function buildSemesterLabels(startTerm = DEFAULT_START_TERM, count = 8) {
+  const startIdx = Math.max(0, TERM_ORDER.indexOf(startTerm))
+  return Array.from({ length: count }, (_, i) => {
+    const term = TERM_ORDER[(startIdx + i) % TERM_ORDER.length]
+    return `T${i + 1} · ${TERM_LABEL[term]}`
+  })
+}
 
 export const REQUIRED_MAJOR_COURSES = 3
 export const REQUIRED_COS_ELECTIVES = 2

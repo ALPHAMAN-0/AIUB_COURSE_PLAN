@@ -357,6 +357,30 @@ button {
 }
 .toggle input { accent-color: var(--accent); }
 
+.planner-controls {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.term-picker {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.term-picker select {
+  padding: 0.35rem 0.6rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.term-picker select:hover { border-color: var(--accent); color: var(--accent); }
+.term-picker select:focus { outline: none; border-color: var(--accent); }
+
 .planner-grid {
   display: grid;
   grid-template-columns: repeat(8, minmax(180px, 1fr));
