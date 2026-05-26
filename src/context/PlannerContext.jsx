@@ -6,12 +6,16 @@ import { isUnlocked, missingPrereqs } from '../utils/prerequisites'
 const STORAGE_KEY = 'aiub_planner_v2'
 const LEGACY_KEY = 'aiub_cse_planner_v1'
 
+const DEFAULT_CREDIT_TARGETS = { spring: 15, summer: 9, fall: 15 }
+
 const emptyPlanner = () => ({
   completedCourses: [],
   careerPath: null,
   majorTrack: null,
   semesterPlan: {},
-  startTerm: 'spring'
+  startTerm: 'spring',
+  startYear: null,
+  creditTargets: { ...DEFAULT_CREDIT_TARGETS }
 })
 
 function makeDefaultState() {
@@ -33,7 +37,11 @@ function initialState() {
         careerPath: parsed.careerPath ?? null,
         majorTrack: parsed.majorTrack ?? null,
         semesterPlan: parsed.semesterPlan && typeof parsed.semesterPlan === 'object' ? parsed.semesterPlan : {},
-        startTerm: parsed.startTerm || 'spring'
+        startTerm: parsed.startTerm || 'spring',
+        startYear: typeof parsed.startYear === 'number' ? parsed.startYear : null,
+        creditTargets: parsed.creditTargets && typeof parsed.creditTargets === 'object'
+          ? { ...DEFAULT_CREDIT_TARGETS, ...parsed.creditTargets }
+          : { ...DEFAULT_CREDIT_TARGETS }
       }
     }
   } catch {
@@ -113,6 +121,19 @@ export function PlannerProvider({ children }) {
     mutateActive(curr => ({ ...curr, startTerm: term }))
   }, [mutateActive])
 
+  const setStartYear = useCallback((year) => {
+    const num = year === '' || year === null ? null : Number(year)
+    const safe = Number.isFinite(num) ? num : null
+    mutateActive(curr => ({ ...curr, startYear: safe }))
+  }, [mutateActive])
+
+  const setCreditTargets = useCallback((partial) => {
+    mutateActive(curr => ({
+      ...curr,
+      creditTargets: { ...DEFAULT_CREDIT_TARGETS, ...curr.creditTargets, ...partial }
+    }))
+  }, [mutateActive])
+
   const assignSemester = useCallback((code, semester) => {
     mutateActive(curr => ({
       ...curr,
@@ -163,6 +184,8 @@ export function PlannerProvider({ children }) {
     setCareerPath,
     setMajorTrack,
     setStartTerm,
+    setStartYear,
+    setCreditTargets,
     assignSemester,
     removeFromSemester,
     reset,

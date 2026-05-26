@@ -1,11 +1,15 @@
 import { useMemo, useState } from 'react'
 import { usePlanner } from '../context/PlannerContext'
-import { buildSemesterLabels, TERM_ORDER, TERM_LABEL } from '../data/programs'
+import { TERM_ORDER, TERM_LABEL } from '../data/programs'
+import { buildCalendarLabels, projectGraduation, DEFAULT_CREDIT_TARGETS } from '../utils/graduation'
+import { downloadPlannerPdf } from '../utils/exportPdf'
 
 function getSemesterAssignment(course, semesterPlan) {
   if (semesterPlan[course.code] !== undefined) return semesterPlan[course.code]
   return course.defaultSemester
 }
+
+const CURRENT_YEAR = new Date().getFullYear()
 
 export default function SemesterPlanner() {
   const {
@@ -17,15 +21,21 @@ export default function SemesterPlanner() {
     allCourses,
     electiveSlots,
     setStartTerm,
+    setStartYear,
+    setCreditTargets,
     program
   } = usePlanner()
   const [showMajor, setShowMajor] = useState(true)
   const [dragCode, setDragCode] = useState(null)
 
   const startTerm = state.startTerm || 'spring'
+  const startYear = typeof state.startYear === 'number' ? state.startYear : null
+  const creditTargets = { ...DEFAULT_CREDIT_TARGETS, ...(state.creditTargets || {}) }
+  const semesterCount = program.semesterCount || 8
+
   const semesterLabels = useMemo(
-    () => buildSemesterLabels(startTerm, program.semesterCount || 8),
-    [startTerm, program.semesterCount]
+    () => buildCalendarLabels(startTerm, startYear, semesterCount),
+    [startTerm, startYear, semesterCount]
   )
 
   const visibleCourses = useMemo(() => {
@@ -39,28 +49,27 @@ export default function SemesterPlanner() {
   }, [allCourses, showMajor, state.majorTrack])
 
   const semesters = useMemo(() => {
-    const buckets = Array.from({ length: 8 }, () => [])
+    const buckets = Array.from({ length: semesterCount }, () => [])
     visibleCourses.forEach(c => {
       const slot = getSemesterAssignment(c, state.semesterPlan)
-      const idx = Math.min(Math.max((slot || 1) - 1, 0), 7)
+      const idx = Math.min(Math.max((slot || 1) - 1, 0), semesterCount - 1)
       buckets[idx].push(c)
     })
     return buckets
-  }, [visibleCourses, state.semesterPlan])
+  }, [visibleCourses, state.semesterPlan, semesterCount])
 
   // Group slot definitions per semester and compute fill counters
   const slotsBySemester = useMemo(() => {
-    const buckets = Array.from({ length: 8 }, () => [])
+    const buckets = Array.from({ length: semesterCount }, () => [])
     electiveSlots.forEach(slot => {
-      const idx = Math.min(Math.max((slot.semester || 1) - 1, 0), 7)
-      // Resolve group: explicit value, else fall back to student's active major track
+      const idx = Math.min(Math.max((slot.semester || 1) - 1, 0), semesterCount - 1)
       const group = slot.group || state.majorTrack || null
       buckets[idx].push({ ...slot, resolvedGroup: group })
     })
     return buckets
-  }, [electiveSlots, state.majorTrack])
+  }, [electiveSlots, state.majorTrack, semesterCount])
 
-  // Per-group completion counts (across all electives in that group that the student has completed)
+  // Per-group completion counts
   const completionByGroup = useMemo(() => {
     const counts = {}
     Object.keys(program.majorLabels || {}).forEach(group => {
@@ -70,7 +79,7 @@ export default function SemesterPlanner() {
     return counts
   }, [program, completedSet])
 
-  // Per-group slot totals (how many slots in the curriculum point at each group)
+  // Per-group slot totals
   const totalSlotsByGroup = useMemo(() => {
     const totals = {}
     electiveSlots.forEach(s => {
@@ -80,6 +89,18 @@ export default function SemesterPlanner() {
     return totals
   }, [electiveSlots, state.majorTrack])
 
+  const projection = useMemo(
+    () => projectGraduation({
+      program,
+      completedCourses: state.completedCourses,
+      semesterPlan: state.semesterPlan,
+      startTerm,
+      startYear,
+      creditTargets
+    }),
+    [program, state.completedCourses, state.semesterPlan, startTerm, startYear, creditTargets]
+  )
+
   function handleDrop(e, targetSem) {
     e.preventDefault()
     const code = e.dataTransfer.getData('text/plain') || dragCode
@@ -88,36 +109,113 @@ export default function SemesterPlanner() {
     setDragCode(null)
   }
 
+  function handleSeasonCredit(season, value) {
+    const n = Number(value)
+    if (!Number.isFinite(n) || n < 0) return
+    setCreditTargets({ [season]: Math.min(n, 30) })
+  }
+
+  function handleDownload() {
+    downloadPlannerPdf({
+      program,
+      semesterPlan: state.semesterPlan,
+      semesterLabels,
+      semesterCourses: semesters,
+      semesterSlots: slotsBySemester,
+      completedSet,
+      projection
+    })
+  }
+
   return (
     <section className="planner">
-      <div className="planner-head">
+      <div className="planner-head no-print">
         <div>
           <h2>Semester Roadmap</h2>
-          <p>Drag courses between semesters to plan your degree. AIUB runs Spring → Summer → Fall — pick the term you started in to label each column.</p>
+          <p>Drag courses between semesters to plan your degree. AIUB runs Spring → Summer → Fall — pick when you started and how many credits you take each season.</p>
         </div>
-        <div className="planner-controls">
-          <label className="term-picker">
-            Start term:
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={showMajor}
+            onChange={e => setShowMajor(e.target.checked)}
+          />
+          Show major electives
+        </label>
+      </div>
+
+      <div className="planner-settings no-print">
+        <div className="settings-row">
+          <div className="setting">
+            <label htmlFor="start-term">Start term</label>
             <select
+              id="start-term"
               value={startTerm}
               onChange={e => setStartTerm(e.target.value)}
-              aria-label="Start term"
             >
               {TERM_ORDER.map(t => (
                 <option key={t} value={t}>{TERM_LABEL[t]}</option>
               ))}
             </select>
-          </label>
-          <label className="toggle">
+          </div>
+          <div className="setting">
+            <label htmlFor="start-year">Start year</label>
             <input
-              type="checkbox"
-              checked={showMajor}
-              onChange={e => setShowMajor(e.target.checked)}
+              id="start-year"
+              type="number"
+              min="2000"
+              max="2100"
+              step="1"
+              placeholder={String(CURRENT_YEAR)}
+              value={startYear ?? ''}
+              onChange={e => setStartYear(e.target.value)}
             />
-            Show major electives
-          </label>
+          </div>
+          <div className="setting setting-group">
+            <span className="setting-label">Credits per term</span>
+            <div className="credit-targets">
+              {TERM_ORDER.map(t => (
+                <label key={t} className="credit-target">
+                  <span>{TERM_LABEL[t]}</span>
+                  <input
+                    type="number"
+                    min="0"
+                    max="30"
+                    step="1"
+                    value={creditTargets[t]}
+                    onChange={e => handleSeasonCredit(t, e.target.value)}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+          <button className="btn download-btn" onClick={handleDownload} type="button">
+            ⬇ Download PDF
+          </button>
         </div>
+
+        {projection && (
+          <div className="projection-banner" role="status">
+            <div className="projection-main">
+              <span className="projection-icon">🎓</span>
+              <div>
+                <div className="projection-title">
+                  Expected graduation: <strong>{projection.finalLabel || '—'}</strong>
+                </div>
+                <div className="projection-sub">
+                  ~{projection.yearsApprox} years · {projection.termsNeeded} terms ·{' '}
+                  {projection.creditsCompleted}/{projection.totalCredits} credits completed ·{' '}
+                  {projection.remainingCredits} to go
+                </div>
+              </div>
+            </div>
+            {startYear === null && (
+              <span className="projection-hint">Set a start year above to see calendar years.</span>
+            )}
+          </div>
+        )}
       </div>
+
       <div className="planner-grid">
         {semesters.map((courses, idx) => {
           const semNum = idx + 1
