@@ -1,6 +1,8 @@
 import { TERM_ORDER, TERM_LABEL, DEFAULT_START_TERM } from '../data/programs'
 
-export const DEFAULT_CREDIT_TARGETS = { spring: 15, summer: 9, fall: 15 }
+export const MIN_TERM_CREDITS = 10
+export const MAX_TERM_CREDITS = 20
+export const DEFAULT_CREDIT_TARGETS = { spring: 15, summer: 10, fall: 15 }
 
 // Resolve the calendar term/year of the n-th term (0-indexed) given a start anchor.
 export function termCalendar(startTerm, startYear, termIndex) {

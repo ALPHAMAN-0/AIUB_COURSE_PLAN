@@ -87,6 +87,12 @@ button {
   font-size: 0.85rem;
   letter-spacing: 0.5px;
 }
+.logo-img {
+  background: transparent;
+  border-radius: 0;
+  object-fit: contain;
+  padding: 0;
+}
 .subtitle { font-size: 0.85rem; }
 
 .header-actions {
@@ -463,7 +469,7 @@ button {
 
 .planner-grid {
   display: grid;
-  grid-template-columns: repeat(8, minmax(180px, 1fr));
+  grid-template-columns: repeat(var(--semester-count, 8), minmax(180px, 1fr));
   gap: 0.6rem;
   overflow-x: auto;
   padding-bottom: 0.5rem;
@@ -681,7 +687,7 @@ button {
 
   /* Planner grid: narrower columns + horizontal swipe with snap */
   .planner-grid {
-    grid-template-columns: repeat(8, minmax(150px, 1fr));
+    grid-template-columns: repeat(var(--semester-count, 8), minmax(150px, 1fr));
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
   }
@@ -711,6 +717,7 @@ button {
   .app-header { padding: 0.65rem 0.75rem; }
   .brand { gap: 0.5rem; }
   .logo { width: 36px; height: 36px; font-size: 0.7rem; border-radius: 8px; }
+  .logo-img { border-radius: 0; }
   h1 { font-size: 1rem; }
   .subtitle { font-size: 0.72rem; }
   .credit-pill { padding: 0.35rem 0.65rem; }
@@ -738,7 +745,7 @@ button {
   .projection-title { font-size: 0.8rem; line-height: 1.3; }
 
   /* Planner grid: even narrower columns */
-  .planner-grid { grid-template-columns: repeat(8, minmax(140px, 1fr)); gap: 0.5rem; }
+  .planner-grid { grid-template-columns: repeat(var(--semester-count, 8), minmax(140px, 1fr)); gap: 0.5rem; }
   .semester-col { min-height: 220px; }
 
   /* Course cards: tighter padding */
@@ -755,7 +762,7 @@ button {
 @media print {
   body { background: #fff; color: #111; }
   .app-header, .tab-nav, .progress-card, .footer, .no-print { display: none !important; }
-  .planner-grid { grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+  .planner-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; }
   .semester-col { break-inside: avoid; background: #fff; border-color: #ccc; }
   .plan-pill { background: #f6f8fa; color: #111; border-color: #d0d7de; }
   .plan-code { color: #1f6feb !important; }

@@ -1,7 +1,13 @@
 import { useMemo, useState } from 'react'
 import { usePlanner } from '../context/PlannerContext'
 import { TERM_ORDER, TERM_LABEL } from '../data/programs'
-import { buildCalendarLabels, projectGraduation, DEFAULT_CREDIT_TARGETS } from '../utils/graduation'
+import {
+  buildCalendarLabels,
+  projectGraduation,
+  DEFAULT_CREDIT_TARGETS,
+  MIN_TERM_CREDITS,
+  MAX_TERM_CREDITS
+} from '../utils/graduation'
 import { downloadPlannerPdf } from '../utils/exportPdf'
 
 function getSemesterAssignment(course, semesterPlan) {
@@ -31,7 +37,35 @@ export default function SemesterPlanner() {
   const startTerm = state.startTerm || 'spring'
   const startYear = typeof state.startYear === 'number' ? state.startYear : null
   const creditTargets = { ...DEFAULT_CREDIT_TARGETS, ...(state.creditTargets || {}) }
-  const semesterCount = program.semesterCount || 8
+  const minSemesters = program.semesterCount || 8
+
+  const projection = useMemo(
+    () => projectGraduation({
+      program,
+      completedCourses: state.completedCourses,
+      semesterPlan: state.semesterPlan,
+      startTerm,
+      startYear,
+      creditTargets
+    }),
+    [program, state.completedCourses, state.semesterPlan, startTerm, startYear, creditTargets]
+  )
+
+  const highestUsedSemester = useMemo(() => {
+    let m = 0
+    Object.values(state.semesterPlan || {}).forEach(s => {
+      const n = Number(s) || 0
+      if (n > m) m = n
+    })
+    return m
+  }, [state.semesterPlan])
+
+  // Dynamic count: at least 8, but grows to fit projection or any manually-placed course
+  const semesterCount = Math.max(
+    minSemesters,
+    projection?.termsNeeded || 0,
+    highestUsedSemester
+  )
 
   const semesterLabels = useMemo(
     () => buildCalendarLabels(startTerm, startYear, semesterCount),
@@ -58,7 +92,7 @@ export default function SemesterPlanner() {
     return buckets
   }, [visibleCourses, state.semesterPlan, semesterCount])
 
-  // Group slot definitions per semester and compute fill counters
+  // Slot definitions per semester
   const slotsBySemester = useMemo(() => {
     const buckets = Array.from({ length: semesterCount }, () => [])
     electiveSlots.forEach(slot => {
@@ -89,18 +123,6 @@ export default function SemesterPlanner() {
     return totals
   }, [electiveSlots, state.majorTrack])
 
-  const projection = useMemo(
-    () => projectGraduation({
-      program,
-      completedCourses: state.completedCourses,
-      semesterPlan: state.semesterPlan,
-      startTerm,
-      startYear,
-      creditTargets
-    }),
-    [program, state.completedCourses, state.semesterPlan, startTerm, startYear, creditTargets]
-  )
-
   function handleDrop(e, targetSem) {
     e.preventDefault()
     const code = e.dataTransfer.getData('text/plain') || dragCode
@@ -111,8 +133,8 @@ export default function SemesterPlanner() {
 
   function handleSeasonCredit(season, value) {
     const n = Number(value)
-    if (!Number.isFinite(n) || n < 0) return
-    setCreditTargets({ [season]: Math.min(n, 30) })
+    if (!Number.isFinite(n)) return
+    setCreditTargets({ [season]: Math.min(MAX_TERM_CREDITS, Math.max(MIN_TERM_CREDITS, n)) })
   }
 
   function handleDownload() {
@@ -172,18 +194,22 @@ export default function SemesterPlanner() {
             />
           </div>
           <div className="setting setting-group">
-            <span className="setting-label">Credits per term</span>
+            <span className="setting-label">Credits per term ({MIN_TERM_CREDITS}–{MAX_TERM_CREDITS})</span>
             <div className="credit-targets">
               {TERM_ORDER.map(t => (
                 <label key={t} className="credit-target">
                   <span>{TERM_LABEL[t]}</span>
                   <input
                     type="number"
-                    min="0"
-                    max="30"
+                    min={MIN_TERM_CREDITS}
+                    max={MAX_TERM_CREDITS}
                     step="1"
                     value={creditTargets[t]}
                     onChange={e => handleSeasonCredit(t, e.target.value)}
+                    onBlur={e => {
+                      const stored = String(creditTargets[t])
+                      if (e.target.value !== stored) e.target.value = stored
+                    }}
                   />
                 </label>
               ))}
@@ -216,7 +242,7 @@ export default function SemesterPlanner() {
         )}
       </div>
 
-      <div className="planner-grid">
+      <div className="planner-grid" style={{ '--semester-count': semesterCount }}>
         {semesters.map((courses, idx) => {
           const semNum = idx + 1
           const slots = slotsBySemester[idx] || []

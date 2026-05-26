@@ -13,7 +13,13 @@ export default function Header() {
   return (
     <header className="app-header">
       <div className="brand">
-        <div className="logo">{program.logo || program.shortName}</div>
+        <img
+          className="logo logo-img"
+          src={`${import.meta.env.BASE_URL}aiub-logo.svg`}
+          alt="AIUB"
+          width="44"
+          height="44"
+        />
         <div>
           <h1>AIUB Course Planner</h1>
           <p className="subtitle">{program.name} · {program.totalCredits} credits</p>

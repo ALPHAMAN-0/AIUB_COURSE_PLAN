@@ -6,7 +6,9 @@ import { isUnlocked, missingPrereqs } from '../utils/prerequisites'
 const STORAGE_KEY = 'aiub_planner_v2'
 const LEGACY_KEY = 'aiub_cse_planner_v1'
 
-const DEFAULT_CREDIT_TARGETS = { spring: 15, summer: 9, fall: 15 }
+const MIN_TERM_CREDITS = 10
+const MAX_TERM_CREDITS = 20
+const DEFAULT_CREDIT_TARGETS = { spring: 15, summer: 10, fall: 15 }
 
 const emptyPlanner = () => ({
   completedCourses: [],
@@ -128,9 +130,15 @@ export function PlannerProvider({ children }) {
   }, [mutateActive])
 
   const setCreditTargets = useCallback((partial) => {
+    const clamped = {}
+    Object.entries(partial).forEach(([season, value]) => {
+      const n = Number(value)
+      if (!Number.isFinite(n)) return
+      clamped[season] = Math.min(MAX_TERM_CREDITS, Math.max(MIN_TERM_CREDITS, n))
+    })
     mutateActive(curr => ({
       ...curr,
-      creditTargets: { ...DEFAULT_CREDIT_TARGETS, ...curr.creditTargets, ...partial }
+      creditTargets: { ...DEFAULT_CREDIT_TARGETS, ...curr.creditTargets, ...clamped }
     }))
   }, [mutateActive])
 
