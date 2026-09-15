@@ -4,7 +4,6 @@ dist-ssr
 .DS_Store
 *.local
 .vite
-.env
-.env.local
 .env.*.local
 .claude
+config.bat
