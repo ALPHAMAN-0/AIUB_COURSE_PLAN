@@ -38,6 +38,7 @@ Open `http://localhost:5173/AIUB_COURSE_PLAN/`.
 ```bash
 npm run build      # outputs dist/
 npm run preview    # preview the production build locally
+npm test           # unit tests in tests/ — Node's built-in test runner (Node 20.6+), no extra packages
 ```
 
 ## Deploying to GitHub Pages
