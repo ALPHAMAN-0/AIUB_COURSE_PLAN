@@ -3,7 +3,7 @@ tags: [architecture, AIUB_COURSE_PLAN]
 ---
 
 ## 1. Stack
-- React 18 (`react`, `react-dom` ^18.3.1) + Vite 5 (`vite` ^5.4.10, `@vitejs/plugin-react` ^4.3.4) — package.json
+- React 18 (`react`, `react-dom` ^18.3.1) + Vite 6 (`vite` ^6.4.4, `@vitejs/plugin-react` ^4.3.4) — package.json
 - Plain JS (`.jsx`/`.js`), ES modules (`"type": "module"` — package.json)
 - Pure CSS, no CSS framework (README: "Pure CSS ... no framework")
 - Persistence: browser localStorage (README; src/hooks/useLocalStorage.js)

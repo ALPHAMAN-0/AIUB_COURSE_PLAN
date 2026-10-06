@@ -21,7 +21,7 @@ Live site (after first deploy): `https://<your-github-username>.github.io/AIUB_C
 
 ## Tech stack
 
-- React 18 + Vite 5
+- React 18 + Vite 6
 - Pure CSS (custom dark theme using CSS variables — no framework)
 - Browser localStorage for persistence
 - GitHub Actions for CI/CD to GitHub Pages
