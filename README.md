@@ -5,12 +5,15 @@ A web app that helps AIUB students plan their 148-credit BSc degree based on the
 ## Architecture / How it Works
 
 ```mermaid
-flowchart LR
-    A[User] --> B[AIUB COURSE PLAN]
-    B --> C{Logic}
-    C --> D[(Data)]
-    C --> E[Output]
-    D --> C
+flowchart TD
+  Entry[Entry] --> App[App]
+  Entry --> PlannerContext[PlannerContext]
+  App --> Components[Components]
+  App --> PlannerContext
+  Components --> PlannerContext
+  PlannerContext --> Hooks[Hooks]
+  PlannerContext --> ProgramData[ProgramData]
+  Components --> Utils[Utils]
 ```
 
 
