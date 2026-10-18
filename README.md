@@ -2,6 +2,18 @@
 
 A web app that helps AIUB students plan their 148-credit BSc degree based on their target career. Supports three programs:
 
+## Architecture / How it Works
+
+```mermaid
+flowchart LR
+    A[User] --> B[AIUB COURSE PLAN]
+    B --> C{Logic}
+    C --> D[(Data)]
+    C --> E[Output]
+    D --> C
+```
+
+
 - **BSc in Computer Science & Engineering** (CSE)
 - **BSc in Data Science** (DS)
 - **BSc in Computer Network & Cyber Security** (CNCS)
