@@ -3,10 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "AIUB BSc in CSE Course Planner — pick a career path, track progress, plan semesters",
+  "description": "AIUB BSc in CSE Course Planner \u2014 pick a career path, track progress, plan semesters",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node init && vite",
+    "build": "node init && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
