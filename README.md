@@ -2,6 +2,21 @@
 
 A web app that helps AIUB students plan their 148-credit BSc degree based on their target career. Supports three programs:
 
+## Architecture / How it Works
+
+```mermaid
+flowchart TD
+  Entry[Entry] --> App[App]
+  Entry --> PlannerContext[PlannerContext]
+  App --> Components[Components]
+  App --> PlannerContext
+  Components --> PlannerContext
+  PlannerContext --> Hooks[Hooks]
+  PlannerContext --> ProgramData[ProgramData]
+  Components --> Utils[Utils]
+```
+
+
 - **BSc in Computer Science & Engineering** (CSE)
 - **BSc in Data Science** (DS)
 - **BSc in Computer Network & Cyber Security** (CNCS)
@@ -21,7 +36,7 @@ Live site (after first deploy): `https://<your-github-username>.github.io/AIUB_C
 
 ## Tech stack
 
-- React 18 + Vite 5
+- React 18 + Vite 6
 - Pure CSS (custom dark theme using CSS variables — no framework)
 - Browser localStorage for persistence
 - GitHub Actions for CI/CD to GitHub Pages
@@ -38,6 +53,7 @@ Open `http://localhost:5173/AIUB_COURSE_PLAN/`.
 ```bash
 npm run build      # outputs dist/
 npm run preview    # preview the production build locally
+npm test           # unit tests in tests/ — Node's built-in test runner (Node 20.6+), no extra packages
 ```
 
 ## Deploying to GitHub Pages
