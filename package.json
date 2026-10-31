@@ -5,8 +5,8 @@
   "type": "module",
   "description": "AIUB BSc in CSE Course Planner \u2014 pick a career path, track progress, plan semesters",
   "scripts": {
-    "dev": "node init && vite",
-    "build": "node init && vite build",
+    "dev": "vite",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {

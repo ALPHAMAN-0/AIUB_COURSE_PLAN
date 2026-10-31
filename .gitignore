@@ -6,4 +6,3 @@ dist-ssr
 .vite
 .env.*.local
 .claude
-config.bat
